@@ -1,0 +1,40 @@
+name: CML
+on: [push]
+jobs:
+  deploy-runner:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: iterative/setup-cml@v1
+      - uses: actions/checkout@v2
+      - name: Deploy runner on GCP Compute Engine
+        env:
+          REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
+          GOOGLE_APPLICATION_CREDENTIALS_DATA: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_DATA }}
+          NEPTUNE_API_TOKEN: ${{ seccrets.NEPTUNE_API_KEY  }}
+        run: |
+          cml runner \
+              --cloud=gcp \
+              --cloud-region=us-east1-c \
+              --cloud-type=n1-highmem-4 \
+              --cloud-gpu=k80 \
+              --labels=cml-gpu
+  train-model:
+    needs: deploy-runner
+    runs-on: [self-hosted, cml-gpu]
+    timeout-minutes: 4320 # 72h
+    container:
+      image: docker://iterativeai/cml:0-dvc2-base1-gpu
+      options: --gpus all
+    steps:
+      - uses: actions/checkout@v2
+      - name: Train model
+        env:
+          REPO_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        run: |
+          pip install -r requirements.txt
+          python train.py
+
+          # Create CML report
+          #cat metrics.txt >> report.md
+          #cml publish plot.png --md --title="Confusion Matrix" >> report.md
+          #cml send-comment report.md
