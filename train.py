@@ -26,7 +26,6 @@ if __name__ == "__main__":
         axs[i].set_title(f"Label = {dm.train_dataloader().dataset.classes[label.item()]}")
     
     neptune_logger = NeptuneLogger(
-        api_key="eyJhcGlfYWRkcmVzcyI6Imh0dHBzOi8vYXBwLm5lcHR1bmUuYWkiLCJhcGlfdXJsIjoiaHR0cHM6Ly9hcHAubmVwdHVuZS5haSIsImFwaV9rZXkiOiJkNjNhOTY3ZS1mOGU2LTQ2ZGItYTFmOS01MGY4ZDdiNGU1YTcifQ==",
         project="fedorgrab/garbage",
         name="Resnet Pytorch Lightning My Data",
     )
