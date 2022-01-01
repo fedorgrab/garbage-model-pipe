@@ -10,7 +10,7 @@ jobs:
         env:
           REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
           GOOGLE_APPLICATION_CREDENTIALS_DATA: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_DATA }}
-          NEPTUNE_API_TOKEN: ${{ seccrets.NEPTUNE_API_KEY  }}
+          NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_KEY  }}
         run: |
           cml runner \
               --cloud=gcp \
