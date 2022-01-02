@@ -11,13 +11,13 @@ BATCH_SIZE = 512
 NUM_EPOCHS = 40
 
 #train_data_dir = "./data_split/train"
-train_data_dir = "./data/train"
+train_data_dir = "./data"
 val_data_dir = "./data_split/val"
 test_data_dir = "./data_split/val"
 
 
 class GarbageDataModule(pl.LightningDataModule):
-    def __init__(self, batch_size, data_dir: str = "./data_all"):
+    def __init__(self, batch_size, data_dir: str = "./data"):
         super().__init__()
         self.data_dir = data_dir
         self.batch_size = batch_size
@@ -28,7 +28,7 @@ class GarbageDataModule(pl.LightningDataModule):
                 transforms.ToTensor(),
                 transforms.Resize((CROP_SIZE, CROP_SIZE)),
                 transforms.RandomCrop((CROP_SIZE, CROP_SIZE)),
-                transforms.RandomAffine(degrees=5, scale=(1., 1.6), ),
+                transforms.RandomAffine(degrees=5, scale=(1., 1.6)),
                 transforms.RandomAutocontrast(),
                 #transforms.RandomApply([transforms.ColorJitter(0.1, 0.10, 0.1, 0.1)]),
                 transforms.Normalize(

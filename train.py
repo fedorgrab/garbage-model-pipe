@@ -9,7 +9,7 @@ import data
 
 if __name__ == "__main__":
     classifier = model.GarbageClassifier()
-    dm = data.GarbageDataModule(batch_size=8)
+    dm = data.GarbageDataModule(batch_size=128)
     dm.setup()
 
     val_samples = next(iter(dm.train_dataloader()))
@@ -32,9 +32,9 @@ if __name__ == "__main__":
     neptune_logger.experiment["dataset_sample"].upload(fig)
 
     trainer = pl.Trainer(
-        max_epochs=5,
+        max_epochs=600,
         progress_bar_refresh_rate=20,
-        gpus=0,
+        gpus=1,
         logger=neptune_logger,
     )
 
