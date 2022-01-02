@@ -35,7 +35,7 @@ if __name__ == "__main__":
     trainer = pl.Trainer(
         max_epochs=5,
         progress_bar_refresh_rate=20,
-        gpus=1,
+        gpus=0,
         logger=neptune_logger,
     )
 
