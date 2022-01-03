@@ -33,7 +33,7 @@ if __name__ == "__main__":
     neptune_logger.experiment["dataset_sample"].upload(fig)
 
     trainer = pl.Trainer(
-        max_epochs=601,
+        max_epochs=600,
         progress_bar_refresh_rate=20,
         gpus=1,
         logger=neptune_logger,
