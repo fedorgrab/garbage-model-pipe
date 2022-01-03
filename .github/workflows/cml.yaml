@@ -6,19 +6,19 @@ jobs:
     steps:
       - uses: iterative/setup-cml@v1
       - uses: actions/checkout@v2
-      - name: Deploy runner on GCP Compute Engine
+      - name: Deploy runner on AWS EC2
         env:
           REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
-          GOOGLE_APPLICATION_CREDENTIALS_DATA: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_DATA }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_KEY  }}
         run: |
           cml runner \
               --single \
-              --cloud=gcp \
+              --cloud=aws \
               --cloud-region=us-east1-c \
-              --cloud-type=n1-highmem-4 \
-              --cloud-hdd-size=100 \
-              --cloud-permission-set=610348185135-compute@developer.gserviceaccount.com \
+              --cloud-type=t2.xlarge \
+              --cloud-hdd-size=50 \
               --cloud-gpu=k80 \
               --labels=cml-gpu
   train-model:
@@ -34,7 +34,8 @@ jobs:
         env:
           REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
           NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_KEY }}
-          GOOGLE_APPLICATION_CREDENTIALS_DATA: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_DATA }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
           tar -xzvf data.tar.gz
           pip install -r requirements.txt
