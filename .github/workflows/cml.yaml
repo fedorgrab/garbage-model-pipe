@@ -17,6 +17,8 @@ jobs:
               --cloud=gcp \
               --cloud-region=us-east1-c \
               --cloud-type=n1-highmem-4 \
+              --cloud-hdd-size=100 \
+              --cloud-permission-set=cml-compute-admin@canvas-verve-320516.iam.gserviceaccount.com  \
               --cloud-gpu=k80 \
               --labels=cml-gpu
   train-model:
