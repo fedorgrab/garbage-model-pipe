@@ -61,7 +61,7 @@ class GarbageDataModule(pl.LightningDataModule):
             self.train_dataset,
             batch_size=self.batch_size,
             shuffle=True,
-            num_workers=4,
+            num_workers=2,
             pin_memory=True,
         )
 
@@ -71,7 +71,7 @@ class GarbageDataModule(pl.LightningDataModule):
             self.test_dataset,
             batch_size=self.batch_size,
             shuffle=True,
-            num_workers=4,
+            num_workers=2,
             pin_memory=True,
         )
 
