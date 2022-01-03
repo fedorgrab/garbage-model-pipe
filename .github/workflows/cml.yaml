@@ -17,9 +17,8 @@ jobs:
               --single \
               --cloud=aws \
               --cloud-region=us-east-2c \
-              --cloud-type=t2.xlarge \
+              --cloud-type=g4dn.xlarge \
               --cloud-hdd-size=50 \
-              --cloud-gpu=k80 \
               --labels=cml-gpu
   train-model:
     needs: deploy-runner
