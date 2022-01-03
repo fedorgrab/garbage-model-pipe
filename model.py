@@ -15,7 +15,7 @@ class GarbageClassifier(LightningModule):
         self,
         learning_rate=0.0001,
         input_shape=224,
-        num_classes=8,
+        num_classes=9,
         pretrained_from_old=True,
     ):
         super().__init__()

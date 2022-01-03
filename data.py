@@ -3,13 +3,7 @@ import pytorch_lightning as pl
 import torchvision
 from torchvision import transforms
 
-
 CROP_SIZE = 224
-TRAIN_BATCH_SIZE = 256
-TEST_BATCH_SIZE = 128
-BATCH_SIZE = 512
-NUM_EPOCHS = 40
-
 #train_data_dir = "./data_split/train"
 train_data_dir = "./data"
 val_data_dir = "./data_split/val"
@@ -25,11 +19,11 @@ class GarbageDataModule(pl.LightningDataModule):
         self.augmentation = transforms.Compose(
             [
                 transforms.ToTensor(),
-                transforms.Resize((CROP_SIZE, CROP_SIZE)),
                 transforms.RandomCrop((CROP_SIZE, CROP_SIZE)),
-                transforms.RandomAffine(degrees=5, scale=(1., 1.6)),
+                transforms.RandomAffine(degrees=20, translate=(0.07, 0.08),)
                 transforms.RandomAutocontrast(),
-                #transforms.RandomApply([transforms.ColorJitter(0.1, 0.10, 0.1, 0.1)]),
+                transforms.RandomApply([transforms.ColorJitter(0.1, 0.05, 0.1, 0.1)]),
+                transforms.Resize((CROP_SIZE, CROP_SIZE))
                 transforms.Normalize(
                     mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]
                 ),
