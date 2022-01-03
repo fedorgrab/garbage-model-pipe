@@ -17,9 +17,8 @@ test_data_dir = "./data_split/val"
 
 
 class GarbageDataModule(pl.LightningDataModule):
-    def __init__(self, batch_size, data_dir: str = "./data"):
+    def __init__(self, batch_size):
         super().__init__()
-        self.data_dir = data_dir
         self.batch_size = batch_size
 
         # Augmentation policy for training set
@@ -61,7 +60,7 @@ class GarbageDataModule(pl.LightningDataModule):
             self.train_dataset,
             batch_size=self.batch_size,
             shuffle=True,
-            num_workers=2,
+            num_workers=0,
             pin_memory=True,
         )
 
@@ -71,7 +70,7 @@ class GarbageDataModule(pl.LightningDataModule):
             self.test_dataset,
             batch_size=self.batch_size,
             shuffle=True,
-            num_workers=2,
+            num_workers=0,
             pin_memory=True,
         )
 
