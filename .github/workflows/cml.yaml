@@ -16,7 +16,7 @@ jobs:
           cml runner \
               --single \
               --cloud=aws \
-              --cloud-region=us-east1-c \
+              --cloud-region=us-east-2c \
               --cloud-type=t2.xlarge \
               --cloud-hdd-size=50 \
               --cloud-gpu=k80 \
