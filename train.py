@@ -9,7 +9,7 @@ import data
 
 if __name__ == "__main__":
     classifier = model.GarbageClassifier()
-    dm = data.GarbageDataModule(batch_size=64)
+    dm = data.GarbageDataModule(batch_size=256)
     dm.setup()
 
     val_samples = next(iter(dm.train_dataloader()))
