@@ -36,6 +36,7 @@ jobs:
           NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_KEY }}
           GOOGLE_APPLICATION_CREDENTIALS_DATA: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_DATA }}
         run: |
+          apt-get -y install cuda-drivers
           tar -xzvf data.tar.gz
           pip install -r requirements.txt
           rm ./data/*/.*.jpeg
