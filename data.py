@@ -4,10 +4,10 @@ import torchvision
 from torchvision import transforms
 
 CROP_SIZE = 224
-#train_data_dir = "./data_split/train"
-train_data_dir = "./data"
-val_data_dir = "./data_split/val"
-test_data_dir = "./data_split/val"
+# train_data_dir = "./data_split/train"
+train_data_dir = "./data/train"
+val_data_dir = "./data/val"
+test_data_dir = "./data/val"
 
 
 class GarbageDataModule(pl.LightningDataModule):
@@ -19,11 +19,11 @@ class GarbageDataModule(pl.LightningDataModule):
         self.augmentation = transforms.Compose(
             [
                 transforms.ToTensor(),
-                transforms.RandomCrop((CROP_SIZE, CROP_SIZE)),
-                transforms.RandomAffine(degrees=8, translate=(0.07, 0.08),),
-                transforms.RandomAutocontrast(),
-                #transforms.RandomApply([transforms.ColorJitter(0.1, 0.05, 0.1, 0.1)]),
                 transforms.Resize((CROP_SIZE, CROP_SIZE)),
+                transforms.RandomCrop((CROP_SIZE, CROP_SIZE)),
+                transforms.RandomAffine(degrees=5, scale=(1.0, 1.6)),
+                transforms.RandomAutocontrast(),
+                # transforms.RandomApply([transforms.ColorJitter(0.1, 0.10, 0.1, 0.1)]),
                 transforms.Normalize(
                     mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]
                 ),
@@ -43,7 +43,7 @@ class GarbageDataModule(pl.LightningDataModule):
     def setup(self, stage=None):
         # build dataset
         self.train_dataset = torchvision.datasets.ImageFolder(train_data_dir)
-#         self.test_dataset = torchvision.datasets.ImageFolder(test_data_dir)
+        #         self.test_dataset = torchvision.datasets.ImageFolder(test_data_dir)
         self.test_dataset = torchvision.datasets.ImageFolder(train_data_dir)
 
         self.train_dataset.transform = self.augmentation
@@ -58,6 +58,14 @@ class GarbageDataModule(pl.LightningDataModule):
             pin_memory=True,
         )
 
+    def val_dataloader(self):
+        return torch.utils.data.DataLoader(
+            self.test_dataset,
+            batch_size=self.batch_size,
+            shuffle=True,
+            num_workers=4,
+            pin_memory=True,
+        )
 
     def test_dataloader(self):
         return torch.utils.data.DataLoader(
@@ -67,4 +75,3 @@ class GarbageDataModule(pl.LightningDataModule):
             num_workers=0,
             pin_memory=True,
         )
-
