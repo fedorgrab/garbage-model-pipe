@@ -54,7 +54,7 @@ class GarbageDataModule(pl.LightningDataModule):
             self.train_dataset,
             batch_size=self.batch_size,
             shuffle=True,
-            num_workers=0,
+            num_workers=2,
             pin_memory=True,
         )
 
