@@ -20,7 +20,7 @@ class GarbageDataModule(pl.LightningDataModule):
             [
                 transforms.ToTensor(),
                 transforms.RandomCrop((CROP_SIZE, CROP_SIZE)),
-                transforms.RandomAffine(degrees=20, translate=(0.07, 0.08),)
+                transforms.RandomAffine(degrees=20, translate=(0.07, 0.08),),
                 transforms.RandomAutocontrast(),
                 transforms.RandomApply([transforms.ColorJitter(0.1, 0.05, 0.1, 0.1)]),
                 transforms.Resize((CROP_SIZE, CROP_SIZE))
