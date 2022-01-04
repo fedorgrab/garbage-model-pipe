@@ -24,10 +24,10 @@ jobs:
   train-model:
     needs: deploy-runner
     runs-on: [self-hosted, cml-gpu]
-    timeout-minutes: 120 # 72h
+    timeout-minutes: 120 # 2h
     container:
       image: docker://pytorch/pytorch
-      options: --gpus all
+      options: --gpus all --shm-size=18g
     steps:
       - uses: actions/checkout@v2
       - name: Train model
