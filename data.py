@@ -23,7 +23,7 @@ class GarbageDataModule(pl.LightningDataModule):
                 transforms.RandomAffine(degrees=20, translate=(0.07, 0.08),),
                 transforms.RandomAutocontrast(),
                 transforms.RandomApply([transforms.ColorJitter(0.1, 0.05, 0.1, 0.1)]),
-                transforms.Resize((CROP_SIZE, CROP_SIZE))
+                transforms.Resize((CROP_SIZE, CROP_SIZE)),
                 transforms.Normalize(
                     mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]
                 ),
