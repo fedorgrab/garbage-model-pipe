@@ -18,7 +18,6 @@ jobs:
               --cloud-region=us-east1-c \
               --cloud-type=n1-highmem-4 \
               --cloud-hdd-size=50 \
-              --cloud-permission-set=610348185135-compute@developer.gserviceaccount.com \
               --cloud-gpu=k80 \
               --labels=cml-gpu
   train-model:
