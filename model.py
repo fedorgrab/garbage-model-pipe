@@ -1,83 +1,44 @@
-import torch
-from torch import nn
-from torchvision import transforms
-from torch.nn import functional as F
-from pytorch_lightning import LightningModule
-import torchvision.models as models
-#from pytorch_lightning.metrics.functional import accuracy
-from torchmetrics.functional import accuracy
-
-NUM_CLASSES_OLD = 6
+import tensorflow
+from tensorflow import keras
+# from tensorflow.keras.applications.resnet_v2 import ResNet50V2
+from tensorflow.keras.applications.resnet import ResNet50
+import constants
+from data_augmentation import data_augmentation
 
 
-class GarbageClassifier(LightningModule):
-    def __init__(
-        self,
-        learning_rate=0.0001,
-        input_shape=224,
-        num_classes=9,
-        pretrained_from_old=True,
-    ):
-        super().__init__()
-        # log hyperparameters
-        self.save_hyperparameters()
-        self.learning_rate = learning_rate
-        self.dim = input_shape
-        self.num_classes = num_classes
-        self.criterion = nn.CrossEntropyLoss()
-        self.resnet_model = models.resnet18(pretrained=True)
+def create_model(train_dataset) -> tensorflow.keras.Model:
+    preprocess_input = keras.applications.resnet50.preprocess_input
+    base_model = ResNet50(
+        input_shape=constants.IMAGE_SHAPE,
+        include_top=False,
+        weights="imagenet"
+    )
 
-        for param in self.resnet_model.parameters():
-            param.requires_grad = False
+    image_batch, label_batch = next(iter(train_dataset))
+    feature_batch = base_model(image_batch)
 
-        linear_size = list(self.resnet_model.children())[-1].in_features
-        self.resnet_model.fc = nn.Linear(linear_size, NUM_CLASSES_OLD)
-        self.load_state_dict(torch.load("./model.pt", map_location=torch.device('cpu')))
-        self.resnet_model.fc = nn.Linear(linear_size, num_classes)
+    base_model.trainable = False
 
-    def forward(self, x):
-        return self.resnet_model(x)
+    global_average_layer = keras.layers.GlobalAveragePooling2D()
+    feature_batch_average = global_average_layer(feature_batch)
 
-    def training_step(self, batch, batch_idx):
-        x, y = batch
-        logits = self(x)
-        loss = self.criterion(logits, y)
+    prediction_layer = keras.layers.Dense(9)
+    prediction_batch = prediction_layer(feature_batch_average)
 
-        # training metrics
-        preds = torch.argmax(logits, dim=1)
-        acc = accuracy(preds, y)
+    inputs = keras.Input(shape=constants.IMAGE_SHAPE)
+    x = data_augmentation(inputs)
+    x = preprocess_input(x)
+    x = base_model(x, training=False)
+    x = global_average_layer(x)
+    x = keras.layers.Dropout(0.2)(x)
+    outputs = prediction_layer(x)
+    model = keras.Model(inputs, outputs)
 
-        self.log("train_loss", loss, on_epoch=True, on_step=False, logger=True)
-        self.log("train_acc", acc, on_epoch=True, on_step=False, logger=True)
+    base_learning_rate = 0.0001
+    model.compile(
+        optimizer=keras.optimizers.Adam(learning_rate=base_learning_rate),
+        loss=keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+        metrics=["accuracy"],
+    )
 
-        return loss
-
-    # logic for a single validation step
-    def validation_step(self, batch, batch_idx):
-        x, y = batch
-        logits = self(x)
-        loss = self.criterion(logits, y)
-
-        # validation metrics
-        preds = torch.argmax(logits, dim=1)
-        acc = accuracy(preds, y)
-
-        self.log("val_loss", loss, prog_bar=True)
-        self.log("val_acc", acc, prog_bar=True)
-        return loss
-
-    # logic for a single testing step
-    def test_step(self, batch, batch_idx):
-        x, y = batch
-        logits = self(x)
-        loss = self.criterion(logits, y)
-
-        # validation metrics
-        preds = torch.argmax(logits, dim=1)
-        acc = accuracy(preds, y)
-        self.log("test_loss", loss, prog_bar=True)
-        self.log("test_acc", acc, prog_bar=True)
-        return loss
-
-    def configure_optimizers(self):
-        return torch.optim.Adam(self.parameters(), lr=self.learning_rate)
+    return model
