@@ -4,80 +4,79 @@ from torchvision import transforms
 from torch.nn import functional as F
 from pytorch_lightning import LightningModule
 import torchvision.models as models
-#from pytorch_lightning.metrics.functional import accuracy
-from torchmetrics.functional import accuracy
-
-NUM_CLASSES_OLD = 6
+import torchmetrics
+import constants
 
 
 class GarbageClassifier(LightningModule):
-    def __init__(
-        self,
-        learning_rate=0.0001,
-        input_shape=224,
-        num_classes=8,
-        pretrained_from_old=True,
-    ):
+    def __init__(self, num_classes=9):
         super().__init__()
-        # log hyperparameters
-        self.save_hyperparameters()
-        self.learning_rate = learning_rate
-        self.dim = input_shape
-        self.num_classes = num_classes
-        self.criterion = nn.CrossEntropyLoss()
-        self.resnet_model = models.resnet18(pretrained=True)
 
-        for param in self.resnet_model.parameters():
+        # init a pretrained resnet
+        backbone = models.resnet50(pretrained=True)
+        num_filters = backbone.fc.in_features
+        layers = list(backbone.children())[:-1]
+        self.feature_extractor = nn.Sequential(*layers)
+
+        for param in self.feature_extractor.parameters():
             param.requires_grad = False
 
-        linear_size = list(self.resnet_model.children())[-1].in_features
-        self.resnet_model.fc = nn.Linear(linear_size, NUM_CLASSES_OLD)
-        self.load_state_dict(torch.load("./model.pt", map_location=torch.device('cpu')))
-        self.resnet_model.fc = nn.Linear(linear_size, num_classes)
+        self.classifier = nn.Linear(num_filters, num_classes)
+
+        self.train_accuracy = torchmetrics.Accuracy()
+        self.valid_accuracy = torchmetrics.Accuracy()
 
     def forward(self, x):
-        return self.resnet_model(x)
+        self.feature_extractor.eval()
 
-    def training_step(self, batch, batch_idx):
-        x, y = batch
-        logits = self(x)
-        loss = self.criterion(logits, y)
+        with torch.no_grad():
+            representations = self.feature_extractor(x).flatten(1)
 
-        # training metrics
-        preds = torch.argmax(logits, dim=1)
-        acc = accuracy(preds, y)
-
-        self.log("train_loss", loss, on_epoch=True, on_step=False, logger=True)
-        self.log("train_acc", acc, on_epoch=True, on_step=False, logger=True)
-
-        return loss
-
-    # logic for a single validation step
-    def validation_step(self, batch, batch_idx):
-        x, y = batch
-        logits = self(x)
-        loss = self.criterion(logits, y)
-
-        # validation metrics
-        preds = torch.argmax(logits, dim=1)
-        acc = accuracy(preds, y)
-
-        self.log("val_loss", loss, prog_bar=True)
-        self.log("val_acc", acc, prog_bar=True)
-        return loss
-
-    # logic for a single testing step
-    def test_step(self, batch, batch_idx):
-        x, y = batch
-        logits = self(x)
-        loss = self.criterion(logits, y)
-
-        # validation metrics
-        preds = torch.argmax(logits, dim=1)
-        acc = accuracy(preds, y)
-        self.log("test_loss", loss, prog_bar=True)
-        self.log("test_acc", acc, prog_bar=True)
-        return loss
+        return self.classifier(representations)
 
     def configure_optimizers(self):
-        return torch.optim.Adam(self.parameters(), lr=self.learning_rate)
+        return torch.optim.Adam(
+            self.parameters(), lr=constants.LEARNING_RATE
+        )
+
+    def training_step(self, batch, batch_nb):
+        x, y = batch
+        y_hat = self(x)
+
+        loss = F.cross_entropy(y_hat, y)
+        self.train_accuracy(y_hat, y)
+
+        self.log("train_accuracy_step", self.train_accuracy)
+        self.log("train_loss_step", loss)
+        return loss
+
+    def validation_step(self, batch, batch_nb):
+        # OPTIONAL
+        x, y = batch
+        y_hat = self(x)
+
+        loss = F.cross_entropy(y_hat, y)
+        self.valid_accuracy(y_hat, y)
+
+        self.log("valid_accuracy_step", self.valid_accuracy)
+        self.log("valid_loss_step", loss)
+        return loss
+    #
+    # def validation_epoch_end(self, outputs):
+    #     # OPTIONAL
+    #     avg_loss = torch.stack([x['val_loss'] for x in outputs]).mean()
+    #     tensorboard_logs = {'val_loss': avg_loss}
+    #     self.log('train_acc_epoch', self.accuracy)
+    #     return {'val_loss': avg_loss, 'log': tensorboard_logs}
+
+    # def test_step(self, batch, batch_nb):
+    #     # OPTIONAL
+    #     x, y = batch
+    #     y_hat = self(x)
+    #     return {'test_loss': F.cross_entropy(y_hat, y)}
+
+    # def test_epoch_end(self, outputs):
+    #     # OPTIONAL
+    #     avg_loss = torch.stack([x['test_loss'] for x in outputs]).mean()
+    #     logs = {'test_loss': avg_loss}
+    #     return {'test_loss': avg_loss, 'log': logs, 'progress_bar': logs}

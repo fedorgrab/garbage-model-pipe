@@ -3,3 +3,4 @@ torchmetrics==0.6.2
 neptune-client==0.14.0
 matplotlib==3.5.1
 torchvision==0.11.2
+split-folders
