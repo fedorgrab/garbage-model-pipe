@@ -66,7 +66,7 @@ class GarbageDataModule(pl.LightningDataModule):
             pin_memory=True,
         )
 
-    def val_dataloader(self) -> DataLoader:
+    def test_dataloader(self) -> DataLoader:
         return DataLoader(
             self.test_dataset,
             batch_size=self.batch_size,

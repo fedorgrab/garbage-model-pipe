@@ -46,11 +46,11 @@ class GarbageClassifier(LightningModule):
         loss = F.cross_entropy(y_hat, y)
         self.train_accuracy(y_hat, y)
 
-        self.log("train_accuracy_step", self.train_accuracy)
-        self.log("train_loss_step", loss)
+        self.log("train_accuracy", on_step=True, on_epoch=True, self.train_accuracy)
+        self.log("train_loss", on_step=True, on_epoch=True, loss)
         return loss
 
-    def validation_step(self, batch, batch_nb):
+    def test_step(self, batch, batch_nb):
         # OPTIONAL
         x, y = batch
         y_hat = self(x)
@@ -58,8 +58,8 @@ class GarbageClassifier(LightningModule):
         loss = F.cross_entropy(y_hat, y)
         self.valid_accuracy(y_hat, y)
 
-        self.log("valid_accuracy_step", self.valid_accuracy)
-        self.log("valid_loss_step", loss)
+        self.log("test_accuracy", on_step=True, on_epoch=True, self.valid_accuracy)
+        self.log("test_loss", on_step=True, on_epoch=True, loss)
         return loss
     #
     # def validation_epoch_end(self, outputs):
