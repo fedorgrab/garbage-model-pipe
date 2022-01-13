@@ -35,7 +35,5 @@ jobs:
           NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_KEY }}
           GOOGLE_APPLICATION_CREDENTIALS_DATA: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_DATA }}
         run: |
-          tar -xzvf data.tar.gz
-          pip install -r requirements.txt
-          rm ./data/*/.*.jpeg
-          python train.py
+          export NEPTUNE_API_TOKEN="${{ secrets.NEPTUNE_API_KEY  }}"
+          sh ./train.sh
