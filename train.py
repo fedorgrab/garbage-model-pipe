@@ -1,3 +1,4 @@
+from tensorflow.python.client import device_lib
 import neptune.new as neptune
 from neptune.new.integrations.tensorflow_keras import NeptuneCallback
 import data
@@ -10,6 +11,8 @@ if __name__ == "__main__":
     # utils.unzip_dataset_archive()
     # utils.delete_bad_images()
     # Initialize Datasets
+    print("DEVICES:")
+    print(device_lib.list_local_devices())
     train_dataset, validation_dataset, class_names = data.get_datasets()
     # Initialize Model
     classifier = model.create_model(train_dataset=train_dataset)
