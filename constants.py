@@ -1,6 +1,6 @@
-BATCH_SIZE = 32
+BATCH_SIZE = 256
 IMAGE_SIZE = (224, 224)
 IMAGE_SHAPE = IMAGE_SIZE + (3,)
-NUM_EPOCHS = 2
-DATA_ZIP_DIR = "./data_original.tar.gz"
+NUM_EPOCHS = 600
+DATA_ZIP_DIR = "./data.tar.gz"
 DATA_DIR = "./data"

@@ -1,14 +1,13 @@
 import tensorflow
 from tensorflow import keras
-# from tensorflow.keras.applications.resnet_v2 import ResNet50V2
 from tensorflow.keras.applications.resnet import ResNet50
+from tensorflow.keras.applications.mobilenet import MobileNet, preprocess_input
 import constants
 from data_augmentation import data_augmentation
 
 
 def create_model(train_dataset) -> tensorflow.keras.Model:
-    preprocess_input = keras.applications.resnet50.preprocess_input
-    base_model = ResNet50(
+    base_model = MobileNet(
         input_shape=constants.IMAGE_SHAPE,
         include_top=False,
         weights="imagenet"

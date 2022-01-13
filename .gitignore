@@ -60,7 +60,8 @@ target/
 *.rdb
 *.db
 app/settings/local.py
-
+data
+model.h5
 .mypy_cache/
 
 # Pip
@@ -75,3 +76,4 @@ htmlcov/
 nosetests.xml
 coverage.xml
 .env
+
