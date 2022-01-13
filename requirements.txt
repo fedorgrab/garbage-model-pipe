@@ -1,4 +1,4 @@
 neptune-client==0.14.0
 neptune-tensorflow-keras
-tensorflow==2.7.0
+tensorflow-gpu
 matplotlib==3.5.1
