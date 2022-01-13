@@ -18,14 +18,15 @@ jobs:
               --cloud-region=us-east1-c \
               --cloud-type=n1-highmem-4 \
               --cloud-hdd-size=50 \
+              --cloud-gpu=k80 \
               --labels=cml-gpu
   train-model:
     needs: deploy-runner
     runs-on: [self-hosted, cml-gpu]
     timeout-minutes: 120 # 2h
     container:
-      image: docker://ghcr.io/iterative/cml:0-dvc2-base1
-      options: --shm-size=20g
+      image: /Users/ai/Desktop/trash\ images/images/data.tar.gz 
+      options: --gpus all --shm-size=20g
     steps:
       - uses: actions/checkout@v2
       - name: Train model
