@@ -23,7 +23,7 @@ jobs:
   train-model:
     needs: deploy-runner
     runs-on: [self-hosted, cml-gpu]
-    timeout-minutes: 120 # 2h
+    timeout-minutes: 300
     container:
       image: docker://tensorflow/tensorflow:devel-gpu
       options: --gpus all --shm-size=20g
