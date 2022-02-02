@@ -1,4 +1,8 @@
-tar -xzvf data.tar.gz
-pip install -r requirements.txt
+#!/bin/bash
+tar -xf data.tar.gz
+echo "Data unzipped"
+pip -q install -r requirements.txt
+echo "Python dependencies installed"
 rm ./data/*/.*.jpeg
-python3 train.py
+python train.py
+

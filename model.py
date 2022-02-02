@@ -35,9 +35,7 @@ class GarbageClassifier(LightningModule):
         return self.classifier(representations)
 
     def configure_optimizers(self):
-        return torch.optim.Adam(
-            self.parameters(), lr=constants.LEARNING_RATE
-        )
+        return torch.optim.Adam(self.parameters(), lr=constants.LEARNING_RATE)
 
     def training_step(self, batch, batch_nb):
         x, y = batch
@@ -46,8 +44,8 @@ class GarbageClassifier(LightningModule):
         loss = F.cross_entropy(y_hat, y)
         self.train_accuracy(y_hat, y)
 
-        self.log("train_accuracy", on_step=True, on_epoch=True, self.train_accuracy)
-        self.log("train_loss", on_step=True, on_epoch=True, loss)
+        self.log("train_accuracy", self.train_accuracy, on_step=True, on_epoch=True)
+        self.log("train_loss", loss, on_step=True, on_epoch=True)
         return loss
 
     def test_step(self, batch, batch_nb):
@@ -58,9 +56,10 @@ class GarbageClassifier(LightningModule):
         loss = F.cross_entropy(y_hat, y)
         self.valid_accuracy(y_hat, y)
 
-        self.log("test_accuracy", on_step=True, on_epoch=True, self.valid_accuracy)
-        self.log("test_loss", on_step=True, on_epoch=True, loss)
+        self.log("test_accuracy", self.valid_accuracy, on_step=True, on_epoch=True)
+        self.log("test_loss", loss, on_step=True, on_epoch=True)
         return loss
+
     #
     # def validation_epoch_end(self, outputs):
     #     # OPTIONAL

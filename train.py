@@ -5,10 +5,12 @@ import model
 import data
 import utils
 import splitfolders
+import constants
+
 
 if __name__ == "__main__":
     classifier = model.GarbageClassifier(num_classes=9)
-    dm = data.GarbageDataModule(batch_size=64)
+    dm = data.GarbageDataModule(batch_size=constants.BATCH_SIZE)
     dm.setup()
 
     dataset_sample_fig = utils.get_dataset_sample(dm)
@@ -20,9 +22,9 @@ if __name__ == "__main__":
     neptune_logger.experiment["dataset_sample"].upload(dataset_sample_fig)
 
     trainer = pl.Trainer(
-        max_epochs=2,
+        max_epochs=constants.NUM_EPOCHS,
         progress_bar_refresh_rate=20,
-        gpus=0,
+        gpus=constants.GPUS,
         logger=neptune_logger,
     )
 
