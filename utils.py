@@ -1,6 +1,7 @@
 import os
 import tarfile
 import subprocess
+import tensorflow as tf
 import matplotlib.pyplot as plt
 import constants
 from pathlib import Path
@@ -9,12 +10,17 @@ import imghdr
 
 def get_dataset_sample(train_dataset, class_names):
     fig = plt.figure(figsize=(10, 10))
-    for images, labels in train_dataset.take(1):
-        for i in range(3):
-            ax = plt.subplot(3, 3, i + 1)
-            plt.imshow(images[i].numpy().astype("uint8"))
-            plt.title(class_names[labels[i]])
-            plt.axis("off")
+    fig, axs = plt.subplots(nrows=5, ncols=5, figsize=(13, 13))
+    images, labels = next(iter(train_dataset))
+
+    for i in range(5):
+        for j in range(5):
+            img_i = 5 * i + j
+            image, label = images[img_i], labels[img_i]
+            ax = axs[i][j]
+            ax.imshow(image.numpy().astype("uint8"))
+            ax.set_title(class_names[tf.get_static_value(label)])
+            ax.set_axis_off()
 
     return fig
 
