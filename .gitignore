@@ -75,3 +75,4 @@ htmlcov/
 nosetests.xml
 coverage.xml
 .env
+service_account_creds.json

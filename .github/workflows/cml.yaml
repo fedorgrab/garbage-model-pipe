@@ -18,22 +18,20 @@ jobs:
               --cloud-region=us-east1-c \
               --cloud-type=n1-highmem-4 \
               --cloud-hdd-size=50 \
-              --cloud-gpu=k80 \
-              --labels=cml-gpu
+              --cloud-permission-set=${{ secrets.GOOGLE_SERVICE_ACCOUNT_EMAIL }} \
+              --labels=cml-gpu \
+              --cloud-spot=true
   train-model:
     needs: deploy-runner
     runs-on: [self-hosted, cml-gpu]
     timeout-minutes: 300
     container:
-      image: docker://pytorch/pytorch:1.9.1-cuda11.1-cudnn8-devel
-      options: --gpus all --shm-size=20g
+      image: us-east4-docker.pkg.dev/fedor-smart-trash/model-training/pytorch-cuda:0.1
     steps:
       - uses: actions/checkout@v2
       - name: Train model
         env:
           REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
-          NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_KEY }}
           GOOGLE_APPLICATION_CREDENTIALS_DATA: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_DATA }}
         run: |
-          export NEPTUNE_API_TOKEN="${{ secrets.NEPTUNE_API_KEY  }}"
-          sh ./train.sh
+          python train.py

@@ -4,7 +4,7 @@ import torchvision
 from torchvision import transforms
 import splitfolders
 import constants
-
+import utils
 
 class GarbageDataModule(pl.LightningDataModule):
     def __init__(self, batch_size):
@@ -13,6 +13,7 @@ class GarbageDataModule(pl.LightningDataModule):
         augmentation_transforms = [
             transforms.RandomVerticalFlip(),
             transforms.RandomHorizontalFlip(),
+            transforms.RandomRotation(degrees=120),
             transforms.RandomSolarize(threshold=195),
             transforms.RandomAffine(
                 degrees=50, translate=(0.165, 0.165), scale=(0.45, 1.65)
@@ -52,9 +53,10 @@ class GarbageDataModule(pl.LightningDataModule):
         )
 
     def setup(self, stage=None):
+        utils.download_data()        
         splitfolders.ratio(
-            constants.DATA_DIR,
-            output=constants.DATA_DIR,
+            constants.LOCAL_DATA_DIR,
+            output=constants.LOCAL_SPLIT_DATA_DIR,
             seed=1337,
             ratio=(0.9, 0.1),
             group_prefix=None,

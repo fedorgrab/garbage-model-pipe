@@ -11,7 +11,6 @@ import constants
 class GarbageClassifier(LightningModule):
     def __init__(self, num_classes=9):
         super().__init__()
-
         # init a pretrained resnet
         backbone = models.resnet50(pretrained=True)
         num_filters = backbone.fc.in_features
@@ -68,14 +67,14 @@ class GarbageClassifier(LightningModule):
     #     self.log('train_acc_epoch', self.accuracy)
     #     return {'val_loss': avg_loss, 'log': tensorboard_logs}
 
-    # def test_step(self, batch, batch_nb):
+    #def test_step(self, batch, batch_nb):
     #     # OPTIONAL
-    #     x, y = batch
-    #     y_hat = self(x)
-    #     return {'test_loss': F.cross_entropy(y_hat, y)}
+    #    x, y = batch
+    #    y_hat = self(x)
+    #    return {'test_loss': F.cross_entropy(y_hat, y)}
 
-    # def test_epoch_end(self, outputs):
-    #     # OPTIONAL
-    #     avg_loss = torch.stack([x['test_loss'] for x in outputs]).mean()
-    #     logs = {'test_loss': avg_loss}
-    #     return {'test_loss': avg_loss, 'log': logs, 'progress_bar': logs}
+    def test_epoch_end(self, outputs):
+        # OPTIONAL
+        avg_loss = torch.stack([x['test_loss'] for x in outputs]).mean()
+        logs = {'test_loss': avg_loss}
+        return {'test_loss': avg_loss, 'log': logs, 'progress_bar': logs}
