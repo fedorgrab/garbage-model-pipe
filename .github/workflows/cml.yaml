@@ -15,7 +15,7 @@ jobs:
           cml runner \
               --single \
               --cloud=gcp \
-              --cloud-region=us-east1-c \
+              --cloud-region=us-east4 \
               --cloud-type=n1-highmem-4 \
               --cloud-hdd-size=50 \
               --cloud-permission-set=${{ secrets.GOOGLE_SERVICE_ACCOUNT_EMAIL }},scopes=storage-rw \
