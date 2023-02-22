@@ -5,7 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: iterative/setup-cml@v1
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Deploy runner on GCP Compute Engine
         env:
           REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
@@ -18,7 +18,7 @@ jobs:
               --cloud-region=us-east1-c \
               --cloud-type=n1-highmem-4 \
               --cloud-hdd-size=50 \
-              --cloud-permission-set=${{ secrets.GOOGLE_SERVICE_ACCOUNT_EMAIL }} \
+              --cloud-permission-set=${{ secrets.GOOGLE_SERVICE_ACCOUNT_EMAIL }},scopes=storage-rw \
               --labels=cml-gpu \
               --cloud-spot=true
   train-model:
@@ -28,7 +28,7 @@ jobs:
     container:
       image: us-east4-docker.pkg.dev/fedor-smart-trash/model-training/pytorch-cuda:0.1
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Train model
         env:
           REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
